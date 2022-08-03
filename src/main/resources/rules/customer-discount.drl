@@ -1,0 +1,59 @@
+import com.axcelinno.quotecalc.quotecalc.model.OrderRequest;
+import com.axcelinno.quotecalc.quotecalc.model.CustomerType;
+import com.axcelinno.quotecalc.quotecalc.model.ProductType;
+global com.axcelinno.quotecalc.quotecalc.model.OrderDiscount orderDiscount;
+ 
+dialect "mvel"
+ 
+rule "Age based discount"
+    when
+        $orderRequest : OrderRequest(
+            age < 20 || age > 50
+        )
+
+    then
+        System.out.println("==========Adding 10% discount for Kids/ senior customer=============");
+        orderDiscount.setDiscount(orderDiscount.getDiscount() + 10);
+end
+ 
+rule "Customer type based discount - Loyal customer"
+    when
+        $orderRequest : OrderRequest(
+         customerType.getValue == "LOYAL"
+        )
+
+    then
+        System.out.println("==========Adding 5% discount for LOYAL customer=============");
+        orderDiscount.setDiscount(orderDiscount.getDiscount() + 5);
+end
+     
+rule "Customer type based discount - others"
+    when
+        $orderRequest : OrderRequest(
+            customerType.getValue != "LOYAL"
+        )
+    then
+        System.out.println("==========Adding 3% discount for NEW or DISSATISFIED customer=============");
+        orderDiscount.setDiscount(orderDiscount.getDiscount() + 3);
+end
+ 
+rule "Amount based discount"
+    when
+        $orderRequest : OrderRequest(
+            amount > 1000
+        )
+    then
+        System.out.println("==========Adding 5% discount for amount more than 1000$=============");
+        orderDiscount.setDiscount(orderDiscount.getDiscount() + 5);
+end
+
+rule "Product Type Discount - SALE Products"
+    when
+        $orderRequest : OrderRequest(
+          productType.getValue == "SALE"
+        )
+    then
+        System.out.println("==========Adding 15% discount for SALE products=============");
+        orderDiscount.setDiscount(orderDiscount.getDiscount() + 15);
+end
+
